@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Modal, Pressable, TouchableOpacity, Image, FlatList } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Modal, Pressable, TouchableOpacity, Image, FlatList } from 'react-native';
 
 export default class Notifications extends React.Component {
 	constructor(props) {
@@ -10,6 +10,7 @@ export default class Notifications extends React.Component {
 			title: '',
 			text: '',
 			image: '',
+			isAdd: '',
 			data: [
 				{ id:1, title:"Operating System Notes", text:"An operating system (OS) is the program that, after being initially loaded into the computer by a boot program, manages all of the other application programs in a computer.", attachment:"os.webp", createDate: "2022-12-31T00:08:38Z"},
 				{ id:2, title:"Computer Networks", text:"A computer network is a set of devices connected through links. A node can be computer, printer, or any other device capable of sending or receiving the data", attachment:"network.jpg", createDate: "2022-12-31T10:08:38Z"},
@@ -23,18 +24,30 @@ export default class Notifications extends React.Component {
 			]
 		};
 
-		this.setModalVisible = (visible, data) => {
-			this.setState({ 
-				modalVisible: visible,
-				title: data.title,
-				text: data.text,
-				image: data.image
-			 });
+		this.setModalVisible = (visible, data, isAdd) => {
+			if (isAdd) {
+				this.setState({
+					modalVisible: visible,
+					title: '',
+					text: '',
+					image: '',
+					isAdd: true
+				});
+
+			} else {
+				this.setState({
+					modalVisible: visible,
+					title: data.title,
+					text: data.text,
+					image: data.image,
+					isAdd: ''
+				});
+			}
 		};
 	}
 
 	render() {
-		const { modalVisible, data, title, text, image } = this.state;
+		const { modalVisible, data, title, text, image, isAdd, onChangeText } = this.state;
 
 		return (
 			<>
@@ -48,19 +61,38 @@ export default class Notifications extends React.Component {
 						transparent={true}
 						visible={modalVisible}
 						onRequestClose={() => {
-							this.setModalVisible(!modalVisible);
+							this.setModalVisible(!modalVisible, {}, false);
 						}}
 					>
 						<View style={styles.centeredView}>
 							<View style={styles.modalView}>
-								<Text style={styles.name}>{title}</Text>
-								<Text style={styles.lineHeightChange}>{text}</Text>
-								{image}
+								{ !isAdd ? 
+									<>
+										<Text style={styles.name}>{title}</Text>
+										<Text style={styles.lineHeightChange}>{text}</Text>
+										{image}
+									</> :
+									<>
+										<Text style={styles.labelText}>Jot Title</Text>
+										<TextInput
+											style={styles.input}
+											value="Today's Task"
+											onChangeText={onChangeText}/>
+										<Text style={styles.labelText}>Jot</Text>
+										<TextInput
+											multiline={true}
+											numberOfLines={10}
+											value="Submit networking assignment, study data mining techniques etc.,"
+											onChangeText={onChangeText}
+											style={[styles.input, styles.textArea]}/>
+									</>
+								}
+								
 								<Pressable
 									style={[styles.button, styles.buttonClose]}
-									onPress={() => this.setModalVisible(!modalVisible, {})}
+									onPress={() => this.setModalVisible(!modalVisible, {}, false)}
 									>
-									<Text style={styles.textStyle}>Close</Text>
+									<Text style={styles.textStyle}>{ isAdd ? 'Save' : 'Close' }</Text>
 								</Pressable>
 							</View>
 						</View>
@@ -111,7 +143,7 @@ export default class Notifications extends React.Component {
 												"title": Notification.title,
 												"text": Notification.text,
 												"image": attachmentOnModal
-											})}
+											}, false)}
 										>
 											<View style={styles.text}>
 												<Text style={styles.name}>{Notification.title}</Text>
@@ -134,7 +166,11 @@ export default class Notifications extends React.Component {
 				/>
 
 				<View style={ modalVisible ? [styles.footerStyle, styles.disableScroll] : styles.footerStyle}>
-					<Text style={styles.textElement}>+ Add New Jot</Text>
+					<Pressable
+						onPress={() => this.setModalVisible(true, {}, true)}
+					>
+						<Text style={styles.textElement}>+ Add New Jot</Text>
+					</Pressable>
 				</View>
 			</>
 		);
@@ -306,17 +342,15 @@ const styles = StyleSheet.create({
 	centeredView: {
 		flex: 1,
 		justifyContent: "center",
-		alignItems: "center",
 		marginTop: 42
 	},
 
 	modalView: {
 		margin: 20,
-		backgroundColor: "white",
+		backgroundColor: "#FFF",
 		borderRadius: 20,
 		padding: 35,
-		alignItems: "center",
-		shadowColor: "#000",
+		shadowColor: "#343434",
 
 		shadowOffset: {
 			width: 0,
@@ -356,4 +390,24 @@ const styles = StyleSheet.create({
 	lineHeightChange: {
 		lineHeight: '2'
 	},
+
+	input: {
+		height: 40,
+		margin: 12,
+		borderWidth: 1,
+		padding: 10,
+		borderColor: "#3D6DCC"
+	},
+
+	textArea: {
+		height:200,
+		textAlignVertical: 'top'
+	},
+
+	labelText: {
+		fontSize: 14,
+		fontWeight: 700,
+		paddingLeft: 10,
+		color: '#343434'
+	}
 }); 
