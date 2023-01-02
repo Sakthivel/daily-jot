@@ -16,7 +16,7 @@ It is an mobile application which will help us to save tips on our mobile, later
 
 Step to run application:-
 
-Install Node version: >12 and < 16 https://nodejs.org/download/release/v14.18.2/ -> download  https://node-v14.18.2-win-x64.zip and extract and install it!
+Install Node version: >12 and < 16 https://nodejs.org/download/release/v14.18.2/ -> download  node-v14.18.2-win-x64.zip and extract and install it!
 
 Install VSCode https://code.visualstudio.com/download
 
